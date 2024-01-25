@@ -6,11 +6,27 @@
 /*   By: sbouabid <sbouabid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 17:24:04 by sbouabid          #+#    #+#             */
-/*   Updated: 2024/01/25 16:21:40 by sbouabid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:41:55 by sbouabid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	handel_6_arg(t_philo *philo)
+{
+	int	i;
+	int	size;
+
+	i = 0;
+	size = philo->nbr_of_times_eat;
+	while (i < size)
+	{
+		eat(philo);
+		think(philo);
+		sleeep(philo);
+		i++;
+	}
+}
 
 void	*find_your_self(void *arg)
 {
@@ -19,12 +35,16 @@ void	*find_your_self(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 != 0)
 		usleep(100);
-	while (1)
+	if (philo->nbr_of_times_eat < 0)
 	{
-		eat(philo);
-		think(philo);
-		sleeep(philo);
+		while (1)
+		{
+			eat(philo);
+			think(philo);
+			sleeep(philo);
+		}
 	}
+	handel_6_arg(philo);
 	return (NULL);
 }
 
@@ -40,7 +60,7 @@ int	create_philos(t_philo *philo, pthread_t *philos)
 		i++;
 	}
 	check_if_died(philo);
-	if (*philo->die != 1)
+	if (*philo->die != 1 || philo->nbr_of_times_eat == 0)
 	{
 		i = 0;
 		while (i < philo->nbr_of_philo)
@@ -74,6 +94,7 @@ int	gives_info(t_allocate *al, t_data *data)
 		al->philo[i].die = &die;
 		al->philo[i].died = al->died;
 		al->philo[i].checkdeath = al->checkdeath;
+		al->philo[i].times = al->times;
 		if (i == data->nbr_of_philo - 1)
 			al->philo[i].left_fork = &al->forks[0];
 		else
@@ -107,9 +128,13 @@ int	started_life(t_data *data)
 	al.died = malloc(sizeof(pthread_mutex_t));
 	if (al.died == NULL)
 		return (free(al.philos),free(al.checkdeath) , free(al.philo),free(al.forks), free(al.msg), 1);
+	al.times = malloc(sizeof(pthread_mutex_t));
+	if (al.died == NULL)
+		return (free(al.philos),free(al.died) ,free(al.checkdeath) , free(al.philo),free(al.forks), free(al.msg), 1);
 	pthread_mutex_init(al.checkdeath, NULL);
 	pthread_mutex_init(al.msg, NULL);
 	pthread_mutex_init(al.died, NULL);
+	pthread_mutex_init(al.times, NULL);
 	int	i = 0;
 	while (i < data->nbr_of_philo)
 	{
@@ -118,7 +143,7 @@ int	started_life(t_data *data)
 	}
 	if (gives_info(&al, data) == 1)
 	{
-		return (free(al.philos), free(al.philo),free(al.forks), free(al.msg), free(al.checkdeath), free(al.died), 1);
+		return (free(al.philos), free(al.philo),free(al.times) ,free(al.forks), free(al.msg), free(al.checkdeath), free(al.died), 1);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: sbouabid <sbouabid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 17:02:10 by sbouabid          #+#    #+#             */
-/*   Updated: 2024/01/25 12:05:20 by sbouabid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:32:21 by sbouabid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_philo
 	pthread_mutex_t *checkdeath;
 	pthread_mutex_t *msg;
 	pthread_mutex_t *died;
+	pthread_mutex_t *times;
 }	t_philo;
 
 typedef struct s_allocate
@@ -55,6 +56,7 @@ typedef struct s_allocate
 	pthread_mutex_t	*msg;
 	pthread_mutex_t	*checkdeath;
 	pthread_mutex_t	*died;
+	pthread_mutex_t	*times;
 } t_allocate;
 
 

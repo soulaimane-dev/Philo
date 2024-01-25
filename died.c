@@ -6,16 +6,35 @@
 /*   By: sbouabid <sbouabid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 19:54:02 by sbouabid          #+#    #+#             */
-/*   Updated: 2024/01/25 16:06:32 by sbouabid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:38:27 by sbouabid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_if_died(t_philo *philo)
+int	check_times(t_philo *philo)
 {
 	int	i;
-	int	size;
+
+	i = 0;
+	pthread_mutex_lock(philo->times);
+	while (i < philo->nbr_of_philo)
+	{
+		if (philo->nbr_of_times_eat != 0)
+		{
+			pthread_mutex_unlock(philo->times);
+			return 0;
+		}
+		i++;
+	}
+	pthread_mutex_unlock(philo->times);
+	return (1);
+}
+
+int	check_if_died(t_philo *philo)
+{
+	int				i;
+	int				size;
 
 	size = philo->nbr_of_philo;
 	while (1)
@@ -23,6 +42,8 @@ int	check_if_died(t_philo *philo)
 		i = 0;
 		while (i < size)
 		{
+			if (check_times(philo) == 1)
+				return 1;
 			pthread_mutex_lock(philo->checkdeath);
 			if (philo[i].time_to_die <= (my_get_time() - philo[i].count_die))
 			{
